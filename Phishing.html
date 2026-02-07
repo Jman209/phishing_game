@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" > 
+  <title>Phishing or Legitimate Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-size: 18px;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #1e293b, #020617 60%);
+      color: #f8fafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(56,189,248,0.15), rgba(99,102,241,0.15), rgba(236,72,153,0.15));
+      animation: moveBg 10s ease infinite;
+    }
+    @keyframes moveBg {
+      0% { transform: translateX(0); }
+      50% { transform: translateX(-40px); }
+      100% { transform: translateX(0); }
+    }
+    .game {
+      position: relative;
+      background: rgba(2,6,23,0.75);
+      backdrop-filter: blur(14px);
+      padding: 28px;
+      border-radius: 18px;
+      width: 92%;
+      max-width: 420px;
+      min-height: 720px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+      border: 1px solid rgba(148,163,184,0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .timer {
+      margin-bottom: 14px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+    img {
+width: 100%;
+height: auto;
+object-fit: contain;
+display: block;
+}
+.image-wrap {
+width: 100%;
+height: auto;
+background: #020617;
+border-radius: 14px;
+margin-bottom: 20px;
+border: 2px solid rgba(148,163,184,0.25);
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+}
+.image-wrap img {
+max-width: 100%;
+max-height: 100%;
+object-fit: contain;
+transform: scale(1.03);
+filter: contrast(1.15) brightness(1.05);
+image-rendering: -webkit-optimize-contrast;
+    }
+    button {
+      width: 100%;
+      padding: 18px;
+      margin-top: 12px;
+      font-size: 18px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    button:hover {
+      transform: scale(1.03);
+      opacity: 0.95;
+    }
+    .phish {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: #fff;
+    }
+    .legit {
+      background: linear-gradient(135deg, #22c55e, #15803d);
+      color: #fff;
+    }
+    .score {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #c7d2fe;
+    }
+  </style>
+</head>
+<body>
+  <div class="game">
+    <h2>Phishing or Legitimate?</h2>
+    <div class="timer">Time left: <span id="time">30</span>s</div>
+    <img id="emailImage" src="email1.png" alt="Email sample" />
+    <button class="phish" onclick="answer('phishing')">Phishing</button>
+    <button class="legit" onclick="answer('legit')">Legitimate</button>
+    <div class="score">Question <span id="qnum">1</span> / 10</div>
+  </div>
+
+  <script>
+    const questions = [
+      { image: 'email1.png', correct: 'legit' },
+      { image: 'email2.png', correct: 'legit' },
+      { image: 'email3.png', correct: 'phishing' },
+      { image: 'email4.png', correct: 'legit' },
+      { image: 'email5.png', correct: 'phishing' },
+      { image: 'email6.png', correct: 'legit' },
+      { image: 'email7.png', correct: 'phishing' },
+      { image: 'email8.png', correct: 'legit' },
+      { image: 'email9.png', correct: 'phishing' },
+      { image: 'email10.png', correct: 'phishing' }
+    ];
+
+    let index = 0;
+    let score = 0;
+    let time = 30;
+    let timer;
+
+    const timeEl = document.getElementById('time');
+    const imgEl = document.getElementById('emailImage');
+    const qnumEl = document.getElementById('qnum');
+
+    function startTimer() {
+      time = 30;
+      timeEl.textContent = time;
+      timer = setInterval(() => {
+        time--;
+        timeEl.textContent = time;
+        if (time === 0) {
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    function answer(choice) {
+      if (choice === questions[index].correct) {
+        score++;
+      }
+      nextQuestion();
+    }
+
+    function nextQuestion() {
+      clearInterval(timer);
+      index++;
+      if (index >= questions.length) {
+        endGame();
+        return;
+      }
+      imgEl.src = questions[index].image;
+      qnumEl.textContent = index + 1;
+      startTimer();
+    }
+
+    function endGame() {
+      let message = 'Good try 🙂';
+      let emoji = '👍';
+
+      if (score > 5) {
+        message = 'Great job! You know your emails!';
+        emoji = '🎉😄🏆';
+      }
+
+      document.querySelector('.game').innerHTML = `
+        <h2>Game Over</h2>
+        <p style="font-size:18px;">Your score: <strong>${score}</strong> / ${questions.length}</p>
+        <p style="font-size:22px; margin: 12px 0;">${emoji}</p>
+        <p>${message}</p>
+        <button onclick="location.reload()">Play Again</button>
+      `;
+    }
+
+    startTimer();
+  </script>
+</body>
+</html>
